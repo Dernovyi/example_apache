@@ -1,0 +1,46 @@
+version: "3.8"
+services:
+  apache:
+    container_name: apache
+    build: ../docker/apache
+    links:
+      - php
+    ports:
+      - "8000:80"
+    volumes:
+      - ../src:/usr/local/apache2/htdocs
+    networks:
+      - blossom-network
+  php:
+    container_name: php
+    build: ../docker/php
+    restart: unless-stopped
+    volumes:
+      - ../src:/usr/local/apache2/htdocs
+      - ./logs:/tmp/xdebug_log
+    working_dir: /usr/local/apache2/htdocs
+    environment:
+      PHP_IDE_CONFIG: serverName=server
+    networks:
+      - blossom-network
+#  mysql_adm:
+#    image: mysql:5.6.51
+#    container_name: mysql_adm
+#    restart: unless-stopped
+#    ports:
+#      - "3306:3306"
+#    volumes:
+#      - ./mysql_bloomex:/var/lib/mysql
+#    environment:
+#      MYSQL_DATABASE: bloomex
+#      MYSQL_USER: bloomex
+#      MYSQL_ROOT_PASSWORD: secret
+#      MYSQL_PASSWORD: secret
+#    networks:
+#      - blossom-network
+volumes:
+  mysql_bloomex:
+networks:
+  blossom-network:
+    name: 'blossom-network'
+    driver: bridge
